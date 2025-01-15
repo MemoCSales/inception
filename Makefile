@@ -37,4 +37,10 @@ verify-sync:
 	rsync -avzn -e "ssh -p $(VM_PORT)" \
 	$(PROJECT_DIR)/ $(VM_USER)@$(VM_HOST):$(REMOTE_DIR)/
 
-.PHONY: vm-start vm-stop vm-status sync sync-delete verify-sync
+# Git rules
+gitp:
+	git add .
+	git commit -m "$(message)"
+	git push
+
+.PHONY: vm-start vm-stop vm-status sync sync-delete verify-sync gitp
