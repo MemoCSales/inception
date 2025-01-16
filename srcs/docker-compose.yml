@@ -1,0 +1,17 @@
+services:
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx
+    ports:
+      - "443:443"
+    secrets:
+      - mcruz-sa_cert
+      - mcruz-sa_key
+    restart: always
+  
+
+secrets:
+  mcruz-sa_cert:
+    file: ./requirements/nginx/ssl/mcruz-sa.42.fr.crt
+  mcruz-sa_key:
+    file: ./requirements/nginx/ssl/mcruz-sa.42.fr.key
