@@ -53,20 +53,42 @@ You can customize the NGINX configuration by editing the `nginx.conf` file. This
 ### Example `nginx.conf`
 
 ```nginx
-events { }
+server {
+	# Listen on port 443 for SSL connections
+	listen 443 ssl;
+	
+	# Define the server name
+	server_name mcruz-sa.42.fr;
+	
+	# SSL certificate configuration
+	ssl_certificate		/etc/nginx/ssl/mcruz-sa.42.fr.crt;
+	ssl_certificate_key /etc/nginx/ssl/mcruz-sa.42.fr.key;
 
-http {
-	server {
-		listen 80;
-		server_name localhost;
-
-		location / {
-			root /usr/share/nginx/html;
-			index index.html index.htm;
-		}
-	}
+	# SSL protocols and ciphers
+	ssl_protocols TLSv1.2 TLSv1.3;
+	ssl_prefer_server_ciphers on;
+	ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
 }
 ```
+
+#### Generate a self-signed certificate
+ - Use openssl to generate a self-signed certificate:
+ ```sh
+	mkdir -p srcs/requirements/nginx/ssl
+ ```
+ ```sh
+		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+	-keyout ./srcs/requirements/nginx/ssl/mcruz-sa.42.fr.key \
+	-out ./srcs/requirements/nginx/ssl/mcruz-sa.42.fr.crt \
+	-subj "/C=DE/ST=Wolfsburg/L=WOB/O=42/OU=mcruz-sa/CN=mcruz-sa"
+```
+
+### Testing nginx
+ 1. docker compose up the serive nginx
+	```sh
+		curl -k https://localhost:443
+	```
+	If you get the html format back to the terminal, means the server is successfully installed and working.
 
 By following these steps, you can set up and use NGINX with Docker for your Inception project, meeting the requirements of using `docker-compose.yml`.
 
