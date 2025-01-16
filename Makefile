@@ -6,20 +6,52 @@ VM_HOST = localhost
 VM_PORT = 4242
 PROJECT_DIR = $(shell pwd)
 REMOTE_DIR = /home/$(VM_USER)/$(NAME)
+WP_DATA = /home/data/wordpress
+DB_DATA = /home/data/mariadb
+
+# Docker cleanup commands
+DOCKER_STOP = docker stop
+DOCKER_RM = docker rm
+DOCKER_RMI = docker rmi -f
+DOCKER_VOLUME_RM = docker volume rm
+DOCKER_NETWORK_RM = docker network rm
+
+# Docker resource lists
+CONTAINERS = $(shell docker ps -aq)
+IMAGES = $(shell docker images -q)
+VOLUMES = $(shell docker volume ls -q)
+NETWORKS = $(shell docker network ls --filter "name=inception" -q)
 
 # Docker rules
 up:
+	@mkdir -p $(WP_DATA)
+	@mkdir -p $(DB_DATA)
 	docker-compose -f srcs/docker-compose.yml up -d
 
 down:
 	docker-compose -f srcs/docker-compose.yml down
 
+build:
+	docker-compose -f srcs/docker-compose.yml build
+
+rebuild:
+	docker-compose -f srcs/docker-compose.yml up -d --build
+
 restart:
 	docker-compose -f srcs/docker-compose.yml restart
 
 clean:
-	docker-compose -f srcs/docker-compose.yml down -v
-	docker system prune -af
+	@if [ -n "$(CONTAINERS)" ]; then $(DOCKER_STOP) $(CONTAINERS); fi
+	@if [ -n "$(CONTAINERS)" ]; then $(DOCKER_RM) $(CONTAINERS); fi
+	@if [ -n "$(IMAGES)" ]; then $(DOCKER_RMI) $(IMAGES); fi
+	@if [ -n "$(VOLUMES)" ]; then $(DOCKER_VOLUME_RM) $(VOLUMES); fi
+	@if [ -n "$(NETWORKS)" ]; then $(DOCKER_NETWORK_RM) $(NETWORKS); fi
+	@rm -rf $(WP_DATA) $(DB_DATA) || true
+
+prune: clean
+	@docker system prune -a --volumes -f
+
+re: clean up
 
 # VM rules
 vm-start:
@@ -61,4 +93,4 @@ gitp:
 	git commit -m "$(message)"
 	git push
 
-.PHONY: up down restart clean vm-start vm-stop vm-status copy verify-copy gitp
+.PHONY: up down restart build rebuild restart clean re prune vm-start vm-stop vm-status copy verify-copy gitp
