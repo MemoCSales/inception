@@ -1,17 +1,42 @@
 services:
-  nginx:
-    container_name: nginx
-    build: ./requirements/nginx
+  # nginx:
+  #   container_name: nginx
+  #   build: ./requirements/nginx
+  #   ports:
+  #     - "443:443"
+  #   secrets:
+  #     - mcruz-sa_cert
+  #     - mcruz-sa_key
+  #   restart: always
+  
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb
     ports:
-      - "443:443"
+      - "3306:3306"
     secrets:
-      - mcruz-sa_cert
-      - mcruz-sa_key
-    restart: always
+      - db_root_password
+      - db_user_password
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_user_password
+      - MYSQL_DB=${MYSQL_DB}
+      - MYSQL_USER=${MYSQL_USER}
+    #networks:
+    restart: unless-stopped
   
 
 secrets:
-  mcruz-sa_cert:
-    file: ./requirements/nginx/ssl/mcruz-sa.42.fr.crt
-  mcruz-sa_key:
-    file: ./requirements/nginx/ssl/mcruz-sa.42.fr.key
+  # mcruz-sa_cert:
+  #   file: ./requirements/nginx/ssl/mcruz-sa.42.fr.crt
+  # mcruz-sa_key:
+  #   file: ./requirements/nginx/ssl/mcruz-sa.42.fr.key
+  db_root_password:
+    file: ./secrets/db_root_password.txt
+  db_user_password:
+    file: ./secrets/db_user_password.txt
+
+volumes:
+  db-data:
