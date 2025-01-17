@@ -24,9 +24,12 @@ NETWORKS = $(shell docker network ls --filter "name=inception" -q)
 
 # Docker rules
 up:
-	@mkdir -p $(WP_DATA)
-	@mkdir -p $(DB_DATA)
+	# @mkdir -p $(WP_DATA)
+	# @mkdir -p $(DB_DATA)
 	docker-compose -f srcs/docker-compose.yml up -d
+
+stop:
+	docker-compose -f srcs/docker-compose.yml stop
 
 down:
 	docker-compose -f srcs/docker-compose.yml down
@@ -52,6 +55,11 @@ prune: clean
 	@docker system prune -a --volumes -f
 
 re: clean up
+
+# MariaDB
+
+maria:
+	docker exec -it mariadb mysql -u root -p
 
 # VM rules
 vm-start:
@@ -93,4 +101,4 @@ gitp:
 	git commit -m "$(message)"
 	git push
 
-.PHONY: up down restart build rebuild restart clean re prune vm-start vm-stop vm-status copy verify-copy gitp
+.PHONY: up stop down restart build rebuild restart clean re prune vm-start vm-stop vm-status copy verify-copy gitp

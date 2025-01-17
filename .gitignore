@@ -1,2 +1,3 @@
 #ignoring certificates
-srcs/requirements/nginx/ssl/
+# srcs/requirements/nginx/ssl/
+# srcs/secrets/
