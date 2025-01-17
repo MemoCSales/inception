@@ -96,7 +96,7 @@ verify:
 
 
 # Git rules
-gitp:
+git:
 	git add .
 	git commit -m "$(message)"
 	git push
