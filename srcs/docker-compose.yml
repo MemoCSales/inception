@@ -1,13 +1,19 @@
 services:
-  # nginx:
-  #   container_name: nginx
-  #   build: ./requirements/nginx
-  #   ports:
-  #     - "443:443"
-  #   secrets:
-  #     - mcruz-sa_cert
-  #     - mcruz-sa_key
-  #   restart: always
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx
+    ports:
+      - "443:443"
+    secrets:
+      - mcruz-sa_cert
+      - mcruz-sa_key
+    depends_on:
+      - wordpress
+    volumes:
+      - wordpress:/var/www/wordpress
+    networks:
+      - inception
+    restart: always
   
   mariadb:
     container_name: mariadb
@@ -24,15 +30,37 @@ services:
       - MYSQL_PASSWORD_FILE=/run/secrets/db_user_password
       - MYSQL_DB=${MYSQL_DB}
       - MYSQL_USER=${MYSQL_USER}
-    #networks:
+    networks:
+      - inception
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-zv", "localhost", "3306"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    
+  wordpress:
+    container_name: wordpress
+    build: ./requirements/wordpress
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    volumes:
+      - wordpress:/var/www/wordpress
+    env_file:
+      - .env
+    networks:
+      - inception
+    restart:
+      unless-stopped
   
 
 secrets:
-  # mcruz-sa_cert:
-  #   file: ./requirements/nginx/ssl/mcruz-sa.42.fr.crt
-  # mcruz-sa_key:
-  #   file: ./requirements/nginx/ssl/mcruz-sa.42.fr.key
+  mcruz-sa_cert:
+    file: ./requirements/nginx/ssl/mcruz-sa.42.fr.crt
+  mcruz-sa_key:
+    file: ./requirements/nginx/ssl/mcruz-sa.42.fr.key
   db_root_password:
     file: ./secrets/db_root_password.txt
   db_user_password:
@@ -40,3 +68,10 @@ secrets:
 
 volumes:
   db-data:
+    name: mariadb
+  wordpress:
+    name: wordpress
+
+networks:
+  inception:
+    name: inception
