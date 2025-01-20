@@ -3,9 +3,9 @@ server {
 	listen 443 ssl;
 	
 	# Define the server name
-	server_name mcruz-sa.42.fr;
+	server_name $DOMAIN_NAME;
 	
-	# SSL certificate configuration
+	# SSL certificate configuration // Identity for the server
 	ssl_certificate		/run/secrets/mcruz-sa_cert;
 	ssl_certificate_key /run/secrets/mcruz-sa_key;
 
@@ -13,4 +13,13 @@ server {
 	ssl_protocols TLSv1.2 TLSv1.3;
 	ssl_prefer_server_ciphers on;
 	ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+
+	root /var/www/wordpress; 	# root directory of the server
+	server_name $DOMAIN_NAME;
+	index index.php; 			# the index file that the server will use
+
+	location ~ \.php$ {
+		include snippets/fastcgi-php.conf;
+		fastcgi_pass wordpress:9000;
+	}
 }
