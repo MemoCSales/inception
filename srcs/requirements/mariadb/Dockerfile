@@ -5,7 +5,7 @@ FROM debian:bullseye
 # Install MariaDB server
 # Removes packages lists to reduce image size
 RUN apt-get update && apt-get upgrade -y \
-	&& apt-get install -y mariadb-server \
+	&& apt-get install -y mariadb-server netcat \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Copy the custom MariaDB configuration script to the container
