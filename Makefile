@@ -24,8 +24,6 @@ NETWORKS = $(shell docker network ls --filter "name=inception" -q)
 
 # Docker rules
 up:
-	# @mkdir -p $(WP_DATA)
-	# @mkdir -p $(DB_DATA)
 	docker-compose -f srcs/docker-compose.yml up -d
 
 stop:
@@ -101,4 +99,8 @@ git:
 	git commit -m "$(message)"
 	git push
 
-.PHONY: up stop down restart build rebuild restart clean re prune vm-start vm-stop vm-status copy verify-copy gitp
+# SSH rules
+ssh:
+	 ssh -p $(VM_PORT) $(VM_USER)@$(VM_HOST)
+
+.PHONY: up stop down restart build rebuild restart clean re prune vm-start vm-stop vm-status copy verify-copy git ssh
