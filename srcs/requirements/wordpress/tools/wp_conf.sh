@@ -1,12 +1,14 @@
 # Script to install and configure WordPress CLI (wp-cli)
 #!/bin/bash
+set -x  # Enable debug mode
+# exec 2>&1  # Redirect stderr to stdout
 
 # Download the WordPress CLI PHAR file from the official GitHub repository
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 
 # Make the WordPress CLI PHAR file executable
 chmod +x wp-cli.phar
-
+echo "############### Download done #################" 
 # Move wp-cli to the system's binary directory to make it globally accessible
 mv wp-cli.phar /usr/local/bin/wp
 
@@ -17,18 +19,41 @@ cd /var/www/wordpress
 chmod -R 755 /var/www/wordpress
 
 # Change ownership of WordPress files to web server user and group for proper operation
-chown -R www-doto:www-data /var/www/wordpress
+chown -R www-data:www-data /var/www/wordpress
 
 
 # wp installation
-wp core download --allow-root
+# WordPress installation
+if [ ! -f "wp-config.php" ]; then
+    # Download WordPress if not present
+    if [ ! -f "index.php" ]; then
+        wp core download --allow-root
+    fi
+	#wp-config-sample.php
+	ls .
+    # Create wp-config.php
+    wp config create \
+        --dbhost="$WP_DB_HOST" \
+        --dbname="$WP_DB_NAME" \
+        --dbuser="$WP_DB_USER" \
+        --dbpass="$WP_DB_PASSWORD" \
+        --allow-root
 
-wp core config --dbhost=mariadb:3306 --dbname="$MYSQL_DB" --dbuser="$MYSQL_USER" --dbpass="$MYSQL_PASSWORD" --allow-root
+    # Install WordPress
+    wp core install \
+        --url="$DOMAIN_NAME" \
+        --title="$WP_TITLE" \
+        --admin_user="$WP_ADMIN_USER" \
+        --admin_password="$WP_ADMIN_PASS" \
+        --admin_email="$WP_ADMIN_EMAIL" \
+        --allow-root
 
-wp core install --url="$DOMAIN_NAME" --title="$WP_TITLE" --admin-user=$"WP_ADMIN_USER" --admin_password="$WP_ADMIN_PASS" --admin_email=$WP_ADMIN_EMAIL" --allow-root
-
-wp user create "$WP_USER_NAME" "$WP_USER_EMAIL" --user_pass="$WP_USER_PASS" --role="$WP_USER_ROLE" --allow-root
-
+    # Create additional user
+    wp user create "$WP_USER_NAME" "$WP_USER_EMAIL" \
+        --role="$WP_USER_ROLE" \
+        --user_pass="$WP_USER_PASS" \
+        --allow-root
+fi
 sed -i '36 s@/run/php/php7.4-fpm.sock@9000@' /etc/php/7.4/fpm/pool.d/www.conf
 
 mkdir -p /run/php

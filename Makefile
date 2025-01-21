@@ -41,6 +41,22 @@ rebuild:
 restart:
 	docker-compose -f srcs/docker-compose.yml restart
 
+ps:
+	@echo "Running containers:"
+	@docker ps -a
+
+images:
+	@echo "Docker Images:"
+	@docker images
+
+volumes:
+	@echo "Docker Volumes:"
+	@docker volume ls
+
+status: ps images volumes
+	@echo "\nNetworks:"
+	@docker network ls
+
 clean:
 	@if [ -n "$(CONTAINERS)" ]; then $(DOCKER_STOP) $(CONTAINERS); fi
 	@if [ -n "$(CONTAINERS)" ]; then $(DOCKER_RM) $(CONTAINERS); fi
@@ -103,4 +119,4 @@ git:
 ssh:
 	 ssh -p $(VM_PORT) $(VM_USER)@$(VM_HOST)
 
-.PHONY: up stop down restart build rebuild restart clean re prune vm-start vm-stop vm-status copy verify-copy git ssh
+.PHONY: up stop down restart build rebuild restart ps images volumes status clean re prune vm-start vm-stop vm-status copy verify-copy git ssh

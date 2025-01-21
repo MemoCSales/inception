@@ -11,11 +11,12 @@ RUN apt-get install -y curl php7.4 php7.4-fpm php7.4-mysql mariadb-client && apt
 # Copy the WordPress configuration script into the container
 COPY ./tools/wp_conf.sh /tools/
 
-# Make the WordPress configuration script executable
+# Make the WordPress configuration script executablemake up
 RUN chmod +x /tools/wp_conf.sh
 
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
 
 # Set the configuration script as the container's entrypoint
-ENTRYPOINT [ "./tools/wp_conf.sh" ]
+# ENTRYPOINT [ "./tools/wp_conf.sh" ] 
+CMD [ "sh" , "./tools/wp_conf.sh" ]

@@ -21,4 +21,4 @@ RUN chmod +x /usr/local/bin/init-db.sh
 EXPOSE 3306
 
 # Set the initialization script as the entrypoint
-ENTRYPOINT ["init-db.sh"]
+ENTRYPOINT ["/usr/local/bin/init-db.sh"]

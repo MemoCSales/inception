@@ -193,3 +193,9 @@ configs:
   nginx_conf:
     file: ./nginx.conf
 ```
+
+
+## Check volumes
+```sh
+  docker volume ls
+```

@@ -1,17 +1,17 @@
 #!/bin/bash
 
+set -x 
+
 # Create required directories for MariaDB
-mkdir -p /var/lib/mysql
-chown -R mysql:mysql /var/lib/mysql
+mkdir -p /var/lib/mysql /run/mysqld
+chown -R mysql:mysql /var/lib/mysql /run/mysqld
 chmod 755 /var/lib/mysql
-mkdir -p /run/mysqld
-chown -R mysql:mysql /run/mysqld
 
 ROOT_PASSWORD=$(cat $MYSQL_ROOT_PASSWORD_FILE)
 USER_PASSWORD=$(cat $MYSQL_PASSWORD_FILE)
-
+ls /var/lib/mysql
 # Configure MariaDB for first run
-if [ ! -d "/var/lib/mysql/mysql" ]; then
+# if [ ! -f "/var/lib/mysql/ibdata1" ]; then
 	# Initialize MySQL data directory
 	mysql_install_db --user=mysql --datadir=/var/lib/mysql
 
@@ -33,8 +33,11 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 EOF
 
 	# Stop the temporary MariaDB instance
-	mysqladmin -u root -p ${ROOT_PASSWORD} shutdown
-fi
+	mysqladmin -u root -p"${ROOT_PASSWORD}" shutdown
+# fi
+
+ls /var/lib/mysql
+# mysql -uroot -p"${ROOT_PASSWORD}" -e "SHOW DATABASES;"
 
 # Start MariaDB in the foreground (PID 1)
 exec mysqld --user=mysql --datadir=/var/lib/mysql

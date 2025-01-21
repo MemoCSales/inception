@@ -32,7 +32,7 @@ services:
       - MYSQL_USER=${MYSQL_USER}
     networks:
       - inception
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test: ["CMD", "nc", "-zv", "localhost", "3306"]
       interval: 10s
@@ -53,7 +53,7 @@ services:
     networks:
       - inception
     restart:
-      unless-stopped
+      always
   
 
 secrets:
