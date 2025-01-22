@@ -48,8 +48,20 @@ services:
         condition: service_healthy
     volumes:
       - wordpress:/var/www/wordpress
-    env_file:
-      - .env
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - WP_DB_HOST=${WP_DB_HOST}
+      - WP_DB_NAME=${MYSQL_DB}
+      - WP_DB_USER=${MYSQL_USER}
+      - WP_DB_PASSWORD=${MYSQL_PASSWORD}
+      - WP_TITLE=${WP_TITLE}
+      - WP_ADMIN_USER=${WP_ADMIN_USER}
+      - WP_ADMIN_PASS=${WP_ADMIN_PASS}
+      - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
+      - WP_USER_NAME=${WP_USER_NAME}
+      - WP_USER_EMAIL=${WP_USER_EMAIL}
+      - WP_USER_PASS=${WP_USER_PASS}
+      - WP_USER_ROLE=${WP_USER_ROLE}
     networks:
       - inception
     restart:

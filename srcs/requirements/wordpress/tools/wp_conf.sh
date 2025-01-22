@@ -2,7 +2,7 @@
 #!/bin/bash
 set -x  # Enable debug mode
 # exec 2>&1  # Redirect stderr to stdout
-
+env
 # Download the WordPress CLI PHAR file from the official GitHub repository
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 
