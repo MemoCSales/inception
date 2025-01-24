@@ -21,6 +21,10 @@ chmod -R 755 /var/www/wordpress
 # Change ownership of WordPress files to web server user and group for proper operation
 chown -R www-data:www-data /var/www/wordpress
 
+# Get password from secret file
+WP_DB_PASSWORD=$(cat $WP_DB_PASSWORD_FILE)
+WP_USER_PASS=$(cat $WP_USER_PASS_FILE)
+WP_ADMIN_PASS=$(cat $WP_ADMIN_PASS_FILE)
 
 # wp installation
 # WordPress installation
