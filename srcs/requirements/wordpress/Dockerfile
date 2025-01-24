@@ -5,7 +5,7 @@ FROM debian:bullseye
 RUN apt-get update && apt-get upgrade -y
 
 # Install required packages: curl, PHP, PHP-FPM, PHP MySQL extension, and MariaDB client
-RUN apt-get install -y curl php7.4 php7.4-fpm php7.4-mysql mariadb-client && apt-get clean && \
+RUN apt-get install -y curl php7.4 php7.4-fpm php7.4-mysql mariadb-client sendmail && apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
 # Copy the WordPress configuration script into the container
