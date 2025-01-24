@@ -113,6 +113,16 @@ docker info
 ### Remove a Docker image
 `docker rmi <image_id>`
 
+### Verify Docker Network
+```bash
+# Check network configuration
+docker network inspect inception
+
+# Verify containers are on the same network
+docker inspect nginx | grep -i network
+docker inspect wordpress | grep -i network
+```
+
 ### Build a Docker image from a Dockerfile
 `docker build -t <image_name> .`
 
