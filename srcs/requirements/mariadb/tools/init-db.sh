@@ -19,15 +19,14 @@ MYSQL_PID=$!
 
 # Wait for MySQL to be ready
 for i in {1..30}; do
-    if mysqladmin ping >/dev/null 2>&1; then
+    if mysqladmin -u root ping >/dev/null 2>&1; then
         break
     fi
     sleep 1
 done
 
 # Configure MySQL
-mysql -u root << EOF
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${ROOT_PASSWORD}';
+mysql -u root -p"${ROOT_PASSWORD}" << EOF
 DELETE FROM mysql.user WHERE User='';
 DROP DATABASE IF EXISTS test;
 DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
@@ -38,6 +37,8 @@ CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${USER_PASSWORD}';
 GRANT ALL PRIVILEGES ON ${MYSQL_DB}.* TO '${MYSQL_USER}'@'%';
 FLUSH PRIVILEGES;
 EOF
+
+mysql -u root -p"${ROOT_PASSWORD}" -e "SELECT User, Host FROM mysql.user;"
 
 # Stop temporary MySQL daemon
 kill $MYSQL_PID
