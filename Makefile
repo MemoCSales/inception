@@ -75,6 +75,18 @@ re: clean up
 maria:
 	docker exec -it mariadb mysql -u root -p
 
+# Wordpress
+wp:
+	@docker exec -it wordpress /bin/bash -c "cd /var/www/wordpress && /bin/bash"
+
+wp-check:
+	@echo "WordPress Configuration Check:"
+	@docker exec wordpress /bin/bash -c "cd /var/www/wordpress && wp config list --allow-root" || true
+	@echo "\nWordPress Database Connection:"
+	@docker exec wordpress /bin/bash -c "cd /var/www/wordpress && wp db check --allow-root" || true
+	@echo "\nWordPress User List:"
+	@docker exec wordpress /bin/bash -c "cd /var/www/wordpress && wp user list --allow-root" || true
+
 # VM rules
 vm-start:
 	VBoxManage startvm "inception" --type headless
@@ -119,4 +131,4 @@ git:
 ssh:
 	 ssh -p $(VM_PORT) $(VM_USER)@$(VM_HOST)
 
-.PHONY: up stop down restart build rebuild restart ps images volumes status clean re prune vm-start vm-stop vm-status copy verify-copy git ssh
+.PHONY: up stop down restart build rebuild restart ps images volumes status clean re prune vm-start vm-stop vm-status copy verify-copy git ssh wp wp-check
