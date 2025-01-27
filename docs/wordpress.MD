@@ -115,6 +115,9 @@ docker logs nginx
 # Test NGINX configuration
 docker exec nginx nginx -t
 
+# Check NGINX configuration
+docker exec nginx nginx -T | grep listen
+
 # Check if port 443 is listening
 docker exec nginx netstat -tulpn | grep 443
 ```
