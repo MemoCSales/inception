@@ -70,6 +70,10 @@ prune: clean
 
 re: clean up
 
+# NGINX
+nginx:
+	docker exec -it nginx /bin/bash
+
 # MariaDB
 
 maria:
@@ -131,4 +135,4 @@ git:
 ssh:
 	 ssh -p $(VM_PORT) $(VM_USER)@$(VM_HOST)
 
-.PHONY: up stop down restart build rebuild restart ps images volumes status clean re prune vm-start vm-stop vm-status copy verify-copy git ssh wp wp-check
+.PHONY: up stop down restart build rebuild restart ps images volumes status clean re prune vm-start vm-stop vm-status copy verify-copy git ssh wp wp-check nginx maria
