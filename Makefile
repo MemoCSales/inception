@@ -24,22 +24,22 @@ NETWORKS = $(shell docker network ls --filter "name=inception" -q)
 
 # Docker rules
 up:
-	docker-compose -f srcs/docker-compose.yml up -d
+	docker compose -f srcs/docker-compose.yml up -d
 
 stop:
-	docker-compose -f srcs/docker-compose.yml stop
+	docker compose -f srcs/docker-compose.yml stop
 
 down:
-	docker-compose -f srcs/docker-compose.yml down
+	docker compose -f srcs/docker-compose.yml down
 
 build:
-	docker-compose -f srcs/docker-compose.yml build
+	docker compose -f srcs/docker-compose.yml build
 
 rebuild:
-	docker-compose -f srcs/docker-compose.yml up -d --build
+	docker compose -f srcs/docker-compose.yml up -d --build
 
 restart:
-	docker-compose -f srcs/docker-compose.yml restart
+	docker compose -f srcs/docker-compose.yml restart
 
 ps:
 	@echo "Running containers:"
