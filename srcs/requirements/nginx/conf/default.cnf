@@ -3,7 +3,7 @@ server {
 	listen 443 ssl;
 	
 	# Define the server name
-	server_name $DOMAIN_NAME;
+	server_name mcruz-sa.42.fr;
 	
 	# SSL certificate configuration // Identity for the server
 	ssl_certificate		/run/secrets/mcruz-sa_cert;
@@ -15,11 +15,45 @@ server {
 	ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
 
 	root /var/www/wordpress; 	# root directory of the server
-	server_name $DOMAIN_NAME;
-	index index.php; 			# the index file that the server will use
 
-	location ~ \.php$ {
-		include snippets/fastcgi-php.conf;
-		fastcgi_pass wordpress:9000;
+	# Default index files
+	index.php, index.html, index.htm;	# the index file that the server will use
+
+
+	# Log files
+	access_log /var/log/nginx/wordpress.access_log;
+	error_log /var/log/nginx/wordpress.error_log;
+
+	# WordPress specific configuration
+	location / {
+		try_files $uri $uri/ /index.php?$args;
 	}
+
+	# PHP processing
+	location ~ \.php$ {
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass wordpress:9000;
+		fastcgi_index index.php;
+		include fastcgi_params;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		fastcgi_param PATH_INFO $fastcgi_path_info;
+	}
+
+	# Security: Deny access to sentitive files
+	location ~* ^/(?:\.htaccess|wp-config\.php)$ {
+		deny all;
+	}
+
+	# Static file caching
+	location ~* \.(js|css|png|jpg|gif|ico)$ {
+		expires max;
+		log_not_found off;
+	}
+}
+
+# Redirect HTTP to https
+server {
+	listen 80;
+	server_name mcruz-sa.42.fr;
+	return 301 https://$server_name$request_uri;
 }
