@@ -10,6 +10,9 @@ RUN apt-get install -y nginx \
 	net-tools \
 	&& rm -rf /var/lib/apt/lists/*
 
+# Removing Server block listening on port 80 as default
+RUN rm -f /etc/nginx/sites-enabled/default
+
 # Create a directory for SSL certificates and for nginx runtime files
 RUN mkdir -p /etc/nginx/ssl /run/nginx /var/www/wordpress \
 	&& chown -R www-data:www-data /var/www/wordpress \
