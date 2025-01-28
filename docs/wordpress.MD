@@ -149,3 +149,61 @@ docker logs wordpress
 # Test WordPress database connection
 make wp-check
 ```
+
+### Access WordPress Admin Panel:
+```text
+URL: https://mcruz-sa.42.fr/wp-admin
+Username: mcruz-sa (from WP_ADMIN_USER)
+Password: roslun42 (from root_password.txt)
+```
+
+### 501 Bad Getaway
+The error indicates that PHP-FPM configuration file is missing in your WordPress container. To fix it need to change update the Dockerfile image:
+```dockerfile
+# Use Debian Bullseye as the base image
+FROM debian:bullseye
+
+# Update package lists and upgrade existing packages
+RUN apt-get update && apt-get upgrade -y
+
+# Install required packages
+RUN apt-get install -y \
+    curl \
+    php7.4 \
+    php7.4-fpm \
+    php7.4-mysql \
+    mariadb-client \
+    sendmail \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create necessary directories
+RUN mkdir -p /run/php
+
+# Create PHP-FPM configuration directory
+RUN mkdir -p /etc/php/7.4/fpm
+
+# Configure PHP-FPM
+RUN sed -i 's/listen = \/run\/php\/php7.4-fpm.sock/listen = 9000/g' /etc/php/7.4/fpm/pool.d/www.conf
+
+# Copy the WordPress configuration script
+COPY ./tools/wp_conf.sh /tools/
+RUN chmod +x /tools/wp_conf.sh
+
+# Expose port 9000 for PHP-FPM
+EXPOSE 9000
+
+# Start PHP-FPM
+CMD ["sh", "./tools/wp_conf.sh"]
+```
+Then verify PHP-FPM is working:
+```bash
+    # Check PHP-FPM configuration
+    docker exec wordpress ls -l /etc/php/7.4/fpm/
+
+    # Verify PHP-FPM is running
+    docker exec wordpress ps aux | grep php-fpm
+
+    # Check PHP-FPM logs
+    docker exec wordpress cat /var/log/php7.4-fpm.log
+```
