@@ -5,8 +5,24 @@ FROM debian:bullseye
 RUN apt-get update && apt-get upgrade -y
 
 # Install required packages: curl, PHP, PHP-FPM, PHP MySQL extension, and MariaDB client
-RUN apt-get install -y curl php7.4 php7.4-fpm php7.4-mysql mariadb-client sendmail && apt-get clean && \
+RUN apt-get install -y \
+	curl \
+	php7.4 \
+	php7.4-fpm \
+	php7.4-mysql \
+	mariadb-client \
+	sendmail \
+	&& apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
+
+# Create necessary directories
+RUN mkdir -p /run/php
+
+# Create PHP-FPM configuratio directory
+RUN mkdir -p /etc/php/7.4/fpm
+
+# Configure PHP-FPM
+RUN sed -i 's/listen = \/run\/php\/php7.4-fpm.sock/listen = 9000/g' /etc/php/7.4/fpm/pool.d/www.conf
 
 # Copy the WordPress configuration script into the container
 COPY ./tools/wp_conf.sh /tools/
