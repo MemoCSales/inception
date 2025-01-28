@@ -230,3 +230,143 @@ This setup separates web serving(NGINX) from PHP processing (PHP-FPM) for better
 
 By following these steps, you can set up and use NGINX with Docker for your Inception project, meeting the requirements of using `docker-compose.yml`.
 
+2. Check your NGINX SSL configuration and certificates:
+	* Verifi Certificate Mounting:
+	```bash
+		# Check if certificates are mounted correctly
+		docker exec nginx ls -l /run/secrets/
+	```
+3. Test NGINX confi syntax
+	```bash
+		# Test NGINX config syntax
+		docker exec nginx nginx -t
+
+		# View full NGINX config
+		docker exec nginx nginx -T
+	```
+
+4. Check SLL Port and Certificates:
+	```bash
+		# Verify port 443 is listening
+		docker exec nginx netstat -tulpn | grep 443
+
+		# Test SSL certificate
+		docker exec nginx openssl x509 -in /run/secrets/mcruz-sa_cert -text -noout
+	```
+
+5. Test HTTPS Connection:
+	```bash
+		# Test with curl (inside VM)
+		curl -k https://mcruz-sa.42.fr
+
+		# Check SSL handshake
+		openssl s_client -connect mcruz-sa.42.fr:443 -servername mcruz-sa.42.fr
+	```
+
+6. Check NGINX Logs: 
+	```bash
+		# View error logs
+		docker exec nginx cat /var/log/nginx/error.log
+
+		# View access logs
+		docker exec nginx cat /var/log/nginx/access.log
+	```
+
+### Connection not secure
+The "connection not secure" message appears because you're using a self-signed SSL certificate. This is expected behavior since the certificate isn't signed by a trusted Certificate Authority (CA). Here are a few ways to handle this:
+
+1. For Development/Testing (Recommended for your 42 project):
+* You can safely ignore the warning by clicking "Advanced" and "Proceed to site"
+* The connection is still encrypted, just not verified by a trusted CA
+* This is acceptable for your Inception project requirements
+
+2. Add Certificate Exception:
+```bash
+
+```
+
+For your 42 Inception project, the self-signed certificate is sufficient, and the security warning is normal. The connection is still encrypted, just not validated by a trusted authority.
+
+### Cipher: TLS_AES_256_GCM_SHA384
+1. Components:
+	* TLS: Transport Layer Security protocol
+	* AES_256: Advanced Encryption Standard with 256-bit key
+	* GCM: Galois/Counter Mode (authenticated encryption)
+	* SHA384: Secure Hash Algorithm with 384-bit digest
+2. Security Features:
+	* AES_256: Military-grade encryption
+	* GCM: Provides both encryption and authentication
+	* SHA384: Strong hash function for integrity
+3. Strength Level:
+	* Key size: 256 bits (very strong)
+	* Authentication: Yes
+	* Integrity: Yes
+	* Perfect Forward Secrecy: Yes
+This cipher suite is considered very secure and is recommended for HTTPS connections. It provides:
+
+	* Data confidentiality
+	* Message authentication
+	* Data integrity
+
+```bash
+	# Check if cipher is being used
+	openssl ciphers -v | grep AES_256_GCM
+```
+
+### Test with curl using -k flag (ignores certificate verification)
+Command:
+```bash
+# Test with detailed output
+curl -vk https://mcruz-sa.42.fr
+
+# Test headers only
+curl -Ik https://mcruz-sa.42.fr
+```
+
+Output:
+```bash
+mcruz-sa@mcruz-sa:~/inception$ curl -vk https://mcruz-sa.42.fr
+*   Trying 127.0.0.1:443...
+* Connected to mcruz-sa.42.fr (127.0.0.1) port 443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*  CAfile: /etc/ssl/certs/ca-certificates.crt
+*  CApath: /etc/ssl/certs
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN, server accepted to use http/1.1
+* Server certificate:
+*  subject: C=DE; ST=Wolfsburg; L=WOB; O=42; OU=mcruz-sa; CN=mcruz-sa.42.fr
+*  start date: Jan 15 23:44:48 2025 GMT
+*  expire date: Jan 15 23:44:48 2026 GMT
+*  issuer: C=DE; ST=Wolfsburg; L=WOB; O=42; OU=mcruz-sa; CN=mcruz-sa.42.fr
+*  SSL certificate verify result: self signed certificate (18), continuing anyway.
+> GET / HTTP/1.1
+> Host: mcruz-sa.42.fr
+> User-Agent: curl/7.74.0
+> Accept: */*
+> 
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+* old SSL session ID is stale, removing
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 200 OK
+< Server: nginx/1.18.0
+< Date: Tue, 28 Jan 2025 16:22:15 GMT
+< Content-Type: text/html; charset=UTF-8
+< Transfer-Encoding: chunked
+< Connection: keep-alive
+< Link: <https://mcruz-sa.42.fr/index.php?rest_route=/>; rel="https://api.w.org/"
+< 
+```
+
+
+Remember, self-signed certificates are valid for development/testing environments like your Inception project.
