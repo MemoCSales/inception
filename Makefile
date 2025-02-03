@@ -6,8 +6,8 @@ VM_HOST = localhost
 VM_PORT = 4242
 PROJECT_DIR = $(shell pwd)
 REMOTE_DIR = /home/$(VM_USER)/$(NAME)
-WP_DATA = /home/data/wordpress
-DB_DATA = /home/data/mariadb
+WP_DATA = /home/mcruz-sa/data/wordpress
+DB_DATA = /home/mcruz-sa/data/mariadb
 
 # Docker cleanup commands
 DOCKER_STOP = docker stop
@@ -63,7 +63,8 @@ clean:
 	@if [ -n "$(IMAGES)" ]; then $(DOCKER_RMI) $(IMAGES); fi
 	@if [ -n "$(VOLUMES)" ]; then $(DOCKER_VOLUME_RM) $(VOLUMES); fi
 	@if [ -n "$(NETWORKS)" ]; then $(DOCKER_NETWORK_RM) $(NETWORKS); fi
-	@rm -rf $(WP_DATA) $(DB_DATA) || true
+	@sudo find $(WP_DATA) -mindepth 1 -delete || true
+	@sudo find $(DB_DATA) -mindepth 1 -delete || true
 
 prune: clean
 	@docker system prune -a --volumes -f

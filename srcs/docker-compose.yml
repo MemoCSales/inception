@@ -8,7 +8,8 @@ services:
       - mcruz-sa_cert
       - mcruz-sa_key
     depends_on:
-      - wordpress
+      wordpress:
+        condition: service_healthy
     volumes:
       - wordpress:/var/www/wordpress
     networks:
@@ -65,6 +66,12 @@ services:
       - WP_DB_PASSWORD_FILE=/run/secrets/user_password
       - WP_USER_PASS_FILE=/run/secrets/user_password
       - WP_ADMIN_PASS_FILE=/run/secrets/root_password
+    healthcheck:
+      test: ["CMD", "php-fpm7.4", "-t"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     networks:
       - inception
     restart:
@@ -84,8 +91,18 @@ secrets:
 volumes:
   db-data:
     name: mariadb
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/mcruz-sa/data/mariadb
+      o: bind
   wordpress:
     name: wordpress
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/mcruz-sa/data/wordpress
+      o: bind
 
 networks:
   inception:

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex  # Add -x for debugging
+# set -ex  # Add -x for debugging
 
 # Create required directories
 mkdir -p /var/lib/mysql /run/mysqld

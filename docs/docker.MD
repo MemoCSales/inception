@@ -209,3 +209,8 @@ configs:
 ```sh
   docker volume ls
 ```
+
+## PID 1
+When working with Docker, understanding the concept of PID 1 and following best practices for writing Dockerfiles is crucial for efficient and secure container management.
+
+PID 1 refers to the first process started by the operating system during boot, also known as init. In the context of Docker, PID 1 is the process that runs as the main process inside a container. Proper handling of PID 1 is essential because it receives signals from the operating system, such as SIGTERM, which is used to terminate a process. If the process running as PID 1 does not handle these signals correctly, it can lead to issues like zombie processes or containers that do not stop cleanly.

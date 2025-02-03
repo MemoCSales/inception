@@ -8,6 +8,7 @@ RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y nginx \
 	openssl \
 	net-tools \
+	curl \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Removing Server block listening on port 80 as default

@@ -1,14 +1,13 @@
 # Script to install and configure WordPress CLI (wp-cli)
 #!/bin/bash
-set -x  # Enable debug mode
+# set -x  # Enable debug mode
 # exec 2>&1  # Redirect stderr to stdout
-env
 # Download the WordPress CLI PHAR file from the official GitHub repository
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 
 # Make the WordPress CLI PHAR file executable
 chmod +x wp-cli.phar
-echo "############### Download done #################" 
+# echo "############### Download done #################" 
 # Move wp-cli to the system's binary directory to make it globally accessible
 mv wp-cli.phar /usr/local/bin/wp
 
@@ -34,7 +33,7 @@ if [ ! -f "wp-config.php" ]; then
         wp core download --allow-root
     fi
 	#wp-config-sample.php
-	ls .
+	# ls .
     # Create wp-config.php
     wp config create \
         --dbhost="$WP_DB_HOST" \
@@ -58,9 +57,13 @@ if [ ! -f "wp-config.php" ]; then
         --user_pass="$WP_USER_PASS" \
         --allow-root
 fi
-sed -i '36 s@/run/php/php7.4-fpm.sock@9000@' /etc/php/7.4/fpm/pool.d/www.conf
 
+sed -i 's/listen = \/run\/php\/php7.4-fpm.sock/listen = 9000/g' /etc/php/7.4/fpm/pool.d/www.conf
 mkdir -p /run/php
+chmod 755 /run/php
 
-/usr/sbin/php-fpm7.4 -F
+/usr/sbin/php-fpm7.4 -F || {
+    echo "Failed to start PHP-FPM"
+    exit 1
+}
 

@@ -207,3 +207,8 @@ Then verify PHP-FPM is working:
     # Check PHP-FPM logs
     docker exec wordpress cat /var/log/php7.4-fpm.log
 ```
+
+## Tips
+    mariadb adming ping
+    nginx check localhost is reachable
+    wordpress use cgi to request healthcheck
