@@ -33,7 +33,7 @@ down:
 	docker compose -f srcs/docker-compose.yml down
 
 build:
-	docker compose -f srcs/docker-compose.yml build
+	docker compose -f srcs/docker-compose.yml build 2>&1
 
 rebuild:
 	docker compose -f srcs/docker-compose.yml up -d --build

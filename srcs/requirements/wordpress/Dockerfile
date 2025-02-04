@@ -11,7 +11,6 @@ RUN apt-get install -y \
 	php7.4-fpm \
 	php7.4-mysql \
 	mariadb-client \
-	sendmail \
 	&& apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
@@ -26,6 +25,9 @@ RUN sed -i 's/listen = \/run\/php\/php7.4-fpm.sock/listen = 9000/g' /etc/php/7.4
 
 # Copy the WordPress configuration script into the container
 COPY ./tools/wp_conf.sh /tools/
+
+RUN mkdir -p /var/www/wordpress
+COPY ./tools/health.php /var/www/wordpress
 
 # Make the WordPress configuration script executablemake up
 RUN chmod +x /tools/wp_conf.sh

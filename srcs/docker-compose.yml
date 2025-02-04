@@ -10,6 +10,11 @@ services:
     depends_on:
       wordpress:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost/health.php"]
+      interval: 10s
+      timeout: 30s
+      retries: 5
     volumes:
       - wordpress:/var/www/wordpress
     networks:
@@ -39,7 +44,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 15s
     
   wordpress:
     container_name: wordpress
@@ -69,9 +73,8 @@ services:
     healthcheck:
       test: ["CMD", "php-fpm7.4", "-t"]
       interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      timeout: 30s
+      retries: 10
     networks:
       - inception
     restart:
