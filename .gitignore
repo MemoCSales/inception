@@ -1,4 +1,4 @@
 #ignoring certificates
-# srcs/requirements/nginx/ssl/
-# srcs/secrets/
+srcs/secrets/
+srcs/.env
 .DS_Store
