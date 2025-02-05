@@ -26,12 +26,13 @@ for i in {1..30}; do
 done
 
 # Configure MySQL
-mysql -u root -p"${ROOT_PASSWORD}" << EOF
+mysql -u root << EOF
 DELETE FROM mysql.user WHERE User='';
 DROP DATABASE IF EXISTS test;
 DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
 CREATE DATABASE IF NOT EXISTS ${MYSQL_DB};
 DROP USER IF EXISTS '${MYSQL_USER}'@'%';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '${ROOT_PASSWORD}';
 DROP USER IF EXISTS '${MYSQL_USER}'@'wordpress.inception';
 CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${USER_PASSWORD}';
 GRANT ALL PRIVILEGES ON ${MYSQL_DB}.* TO '${MYSQL_USER}'@'%';
