@@ -50,6 +50,15 @@ if [ ! -f "wp-config.php" ]; then
         --admin_password="$WP_ADMIN_PASS" \
         --admin_email="$WP_ADMIN_EMAIL" \
         --allow-root
+    
+    # Install and activate the resort hotel inn theme as default
+    echo "Attempting to install resort-hotel-inn theme"
+    wp theme install resort-hotel-inn --activate --allow-root || {
+        echo "Failed to install and activate resort hotel inn theme"
+        exit 1
+    }
+    echo "Theme installation completed. Verifying..."
+    wp theme status resort-hotel-inn --allow-root
 
     # Create additional user
     wp user create "$WP_USER_NAME" "$WP_USER_EMAIL" \
